@@ -84,7 +84,7 @@ jobs:
             
             # docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder || true
             
-            docker buildx build . \
+            docker buildx debug build . \
               --platform linux/amd64,linux/arm64 \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
