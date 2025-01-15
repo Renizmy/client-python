@@ -76,14 +76,8 @@ jobs:
           command: |
             docker run --privileged --rm tonistiigi/binfmt --install linux/amd64,linux/arm64
             CIRCLE_TAG=${CIRCLE_TAG:-latest}
-            docker buildx create --name mybuilder --use
-            docker buildx inspect mybuilder --bootstrap
-            
-            docker run --rm --platform linux/arm64 <<parameters.base_image>> uname -m
-            docker run --rm --platform linux/amd64 <<parameters.base_image>> uname -m
-            
-            # docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder || true
-            
+            docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder 
+            docker buildx inspect mybuilder --bootstrap                  
             docker buildx debug build . \
               --platform linux/amd64,linux/arm64 \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
