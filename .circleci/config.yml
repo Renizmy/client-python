@@ -73,8 +73,7 @@ jobs:
           name: Build opencti/python-client-container <<parameters.python_version>> <<parameters.tag>>
           command: |
             docker run --privileged --rm tonistiigi/binfmt --install all
-            CIRCLE_TAG=${CIRCLE_TAG:-nightly}
-            echo "CIRCLE_TAG=${CIRCLE_TAG}"
+            CIRCLE_TAG=${CIRCLE_TAG:-latest}
             docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder || true
             docker buildx inspect mybuilder --bootstrap
             docker buildx build . \
@@ -197,8 +196,8 @@ workflows:
           python_version: "3-12"
           base_image: "python:3.12-alpine3.20"
           tag: "latest"
-    #      requires:
-    #        - build-library
+          requires:
+            - build-library
     #      filters:
     #        tags:
     #          only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
