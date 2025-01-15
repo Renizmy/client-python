@@ -186,6 +186,7 @@ workflows:
             tags:
               only: /.*/
       - build-container:
+          name: "Build container Python 3.11"
           python_version: "3-11"
           base_image: "python:3.11-alpine3.20"
           tag: "latest"
@@ -195,6 +196,7 @@ workflows:
      #       tags:
      #         only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
       - build-container:
+          name: "Build container Python 3.12"
           python_version: "3-12"
           base_image: "python:3.12-alpine3.20"
           tag: "latest"
