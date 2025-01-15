@@ -61,7 +61,7 @@ jobs:
       python_version:
         type: string
         default: "3-12"
-        description: Python version for the base image with dash (ex: 3-11)
+        description: "Python version for the base image with dash (ex: 3-11)"
       tag:
         type: string
         description: Tag for the container image
