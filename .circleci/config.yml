@@ -31,9 +31,9 @@ jobs:
           branch_pattern: master
           event: fail
           template: basic_fail_1
-      - ms-teams/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
+#      - ms-teams/report:
+#          only_on_fail: true
+#          webhook_url: $MS_TEAMS_WEBHOOK_URL
   linter:
     docker:
       - image: alpine/flake8
@@ -47,9 +47,9 @@ jobs:
           branch_pattern: master
           event: fail
           template: basic_fail_1
-      - ms-teams/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
+#      - ms-teams/report:
+#          only_on_fail: true
+#          webhook_url: $MS_TEAMS_WEBHOOK_URL
 
   build-container:
     docker:
@@ -89,7 +89,6 @@ jobs:
             docker push ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:latest --all-tags
 
   build-library:
-    continue-on-error: true
     working_directory: ~/opencti-client
     docker:
       - image: cimg/python:3.12
@@ -116,9 +115,9 @@ jobs:
           branch_pattern: master
           event: fail
           template: basic_fail_1
-      - ms-teams/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
+#      - ms-teams/report:
+#          only_on_fail: true
+#          webhook_url: $MS_TEAMS_WEBHOOK_URL
       - persist_to_workspace:
           root: ~/opencti-client
           paths:
@@ -149,9 +148,9 @@ jobs:
           branch_pattern: master
           event: fail
           template: basic_fail_1
-      - ms-teams/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
+#      - ms-teams/report:
+#          only_on_fail: true
+#          webhook_url: $MS_TEAMS_WEBHOOK_URL
   notify_rolling:
     docker:
       - image: "cimg/base:stable"
@@ -169,9 +168,9 @@ jobs:
       - slack/notify:
           event: pass
           template: basic_success_1
-      - ms-teams/report:
-          only_on_fail: false
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
+#      - ms-teams/report:
+#          only_on_fail: false
+#          webhook_url: $MS_TEAMS_WEBHOOK_URL
 
 workflows:
   version: 2
