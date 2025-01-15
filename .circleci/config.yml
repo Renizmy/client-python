@@ -3,8 +3,6 @@ version: 2.1
 orbs:
   slack: circleci/slack@4.13.3
   ms-teams: cloudradar-monitoring/ms-teams@0.0.1
-env:
-  BASE_REPO: opencti
 jobs:
   ensure_formatting:
     docker:
@@ -62,6 +60,10 @@ jobs:
         type: string
         default: "3-12"
         description: "Python version for the base image with dash (ex: 3-11)"
+      base_repo:
+        type: string
+        description: base image repo
+        default: "opencti"
       tag:
         type: string
         description: Tag for the container image
@@ -78,14 +80,14 @@ jobs:
             docker buildx inspect mybuilder --bootstrap
             docker buildx build . \
               --platform linux/amd64,linux/arm64 \
-              -t ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
-              -t ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:latest \
+              -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
+              -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>"
       - run:
           name: Push image to registry
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:latest --all-tags
+            docker push <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest --all-tags
 
   build-library:
     working_directory: ~/opencti-client
