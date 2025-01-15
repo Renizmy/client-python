@@ -50,55 +50,43 @@ jobs:
       - ms-teams/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
-  build-container-python-3-11:
+
+  build-container:
     docker:
       - image: cimg/base:stable-20.04
+    parameters:
+      base_image:
+        type: string
+        description: Base image used to build image
+      python_version:
+        type: string
+        default: "3-12"
+        description: Python version for the base image with dash (ex: 3-11)
+      tag:
+        type: string
+        description: Tag for the container image
+        default: "latest"
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build opencti/python-client-container
+          name: Build opencti/python-client-container <<parameters.python_version>> <<parameters.tag>>
           command: |
             docker run --privileged --rm tonistiigi/binfmt --install all
             CIRCLE_TAG=${CIRCLE_TAG:-nightly}
             echo "CIRCLE_TAG=${CIRCLE_TAG}"
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder || true
-            docker buildx inspect mybuilder --bootstrap            
-            docker buildx build . \
-              --platform linux/amd64,linux/arm64 \
-              -t ${{ env.BASE_REPO }}/client-python-3-11:${CIRCLE_TAG} \
-              -t ${{ env.BASE_REPO }}client-python-3-11:latest \
-              --build-arg BASE_IMAGE="python:3.11-alpine3.20" 
-
-      - run:
-          name: Push image to regsitry
-          command: docker push ${{ env.BASE_REPO }}/client-python-3-11:latest --all-tags
-
-  build-container-python-3-12:
-    docker:
-      - image: cimg/base:stable-20.04
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build opencti/python-client
-          command: |
-            docker run --privileged --rm tonistiigi/binfmt --install all
-            CIRCLE_TAG=${CIRCLE_TAG:-nightly}
-            echo "CIRCLE_TAG=${CIRCLE_TAG}"
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder || true
             docker buildx inspect mybuilder --bootstrap
             docker buildx build . \
               --platform linux/amd64,linux/arm64 \
-              -t ${{ env.BASE_REPO }}/client-python-3-12:${CIRCLE_TAG} \
-              -t ${{ env.BASE_REPO }}/client-python-3-12:latest \
-              --build-arg BASE_IMAGE="python:3.12-alpine3.20" 
-
+              -t ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
+              -t ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:latest \
+              --build-arg BASE_IMAGE="<<parameters.base_image>>"
       - run:
-          name: Push image to regsitry
-          command: docker push ${{ env.BASE_REPO }}/client-python-3-12:latest --all-tags
+          name: Push image to registry
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:latest --all-tags
 
   build-library:
     working_directory: ~/opencti-client
@@ -196,18 +184,24 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build-container-python-3-11:
+      - build-container:
+          python_version: "3-11"
+          base_image: "python:3.11-alpine3.20"
+          tag: "latest"
           requires:
             - build-library
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
-      - build-container-python-3-12:
+      - build-container:
+          python_version: "3-12"
+          base_image: "python:3.12-alpine3.20"
+          tag: "latest"
           requires:
             - build-library
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
+              only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/                            
       - build-library:
           filters:
             tags:
