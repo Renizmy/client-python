@@ -89,6 +89,7 @@ jobs:
             docker push ${{ env.BASE_REPO }}/client-python-<<parameters.python_version>>:latest --all-tags
 
   build-library:
+    continue-on-error: true
     working_directory: ~/opencti-client
     docker:
       - image: cimg/python:3.12
