@@ -83,9 +83,11 @@ jobs:
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>"
+            docker images
       - run:
           name: Push image to registry
           command: |
+            docker images
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push <<parameters.base_repo>>/client-python-<<parameters.python_version>> --all-tags
 
