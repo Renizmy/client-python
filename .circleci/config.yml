@@ -70,7 +70,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build opencti/python-client-container <<parameters.python_version>> <<parameters.tag>>
+          name: Build opencti/python-client-container <<parameters.python_version>> <<parameters.tag>> l
           command: |
             docker run --privileged --rm tonistiigi/binfmt --install all
             CIRCLE_TAG=${CIRCLE_TAG:-nightly}
