@@ -78,13 +78,14 @@ jobs:
             CIRCLE_TAG=${CIRCLE_TAG:-latest}
             docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder || true
             docker buildx inspect mybuilder --bootstrap
+
             docker buildx build . \
               --platform linux/amd64,linux/arm64 \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>" \
               --cache-to=type=local,dest=<<parameters.base_image>>.tmp \
-              -o type=tar,dest=<<parameters.base_repo>>/client-python-<<parameters.python_version>>
+              -o type=tar,dest=client-python-<<parameters.python_version>>
             ls -lah
 
       - run:
