@@ -85,7 +85,6 @@ jobs:
               --build-arg BASE_IMAGE="<<parameters.base_image>>" \
               --cache-to=type=local,dest=<<parameters.base_image>>.tmp \
               -o type=tar,dest=client-python-<<parameters.python_version>>
-            ls -lah
 
       - run:
           name: Push image to registry
