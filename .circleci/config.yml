@@ -87,7 +87,7 @@ jobs:
           name: Push image to registry
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest --all-tags
+            docker push <<parameters.base_repo>>/client-python-<<parameters.python_version>> --all-tags
 
   build-library:
     working_directory: ~/opencti-client
