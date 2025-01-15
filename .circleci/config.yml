@@ -84,7 +84,8 @@ jobs:
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>" \
               --cache-to=type=local,dest=<<parameters.base_image>>.tmp \
-              -o type=image,dest=<<parameters.base_repo>>/client-python-<<parameters.python_version>>
+              -o type=tar,dest=<<parameters.base_repo>>/client-python-<<parameters.python_version>>
+            ls -lah
 
       - run:
           name: Push image to registry
