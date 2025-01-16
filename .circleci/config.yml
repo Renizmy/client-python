@@ -63,7 +63,7 @@ jobs:
       base_repo:
         type: string
         description: base image repo
-        default: "opencti"
+        default: "renizmy"
       tag:
         type: string
         description: Tag for the container image
@@ -84,8 +84,7 @@ jobs:
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>" \
               --cache-to=type=local,dest=client-python-<<parameters.python_version>>.tmp \
-              -o type=docker,dest=image.tar.gz
-
+              --push
       - run:
           name: Push image to registry
           command: |
