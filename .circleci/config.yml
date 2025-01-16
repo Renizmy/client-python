@@ -84,7 +84,7 @@ jobs:
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>" \
               --cache-to=type=local,dest=client-python-<<parameters.python_version>>.tmp \
-              -o type=docker,dest=client-python-<<parameters.python_version>>:latest
+              -o type=image
 
       - run:
           name: Push image to registry
