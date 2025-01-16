@@ -89,6 +89,7 @@ jobs:
       - run:
           name: Push image to registry
           command: |
+            ls -alh
             docker load < client-python-<<parameters.python_version>>.tar
             docker images
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
