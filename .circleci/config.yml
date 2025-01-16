@@ -90,6 +90,7 @@ jobs:
           name: Push image to registry
           command: |
             ls -alh
+            docker import "client-python-<<parameters.python_version>>" client-python-<<parameters.python_version>>:latest
             docker load < "client-python-<<parameters.python_version>>"
             docker images
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
