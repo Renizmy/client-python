@@ -78,6 +78,7 @@ jobs:
             CIRCLE_TAG=${CIRCLE_TAG:-latest}
             docker buildx create --platform linux/amd64,linux/arm64 --use --name mybuilder 
             docker buildx inspect mybuilder --bootstrap
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker buildx build . \
               --platform linux/amd64,linux/arm64 \
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:${CIRCLE_TAG} \
