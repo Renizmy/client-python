@@ -84,15 +84,14 @@ jobs:
               -t <<parameters.base_repo>>/client-python-<<parameters.python_version>>:latest \
               --build-arg BASE_IMAGE="<<parameters.base_image>>" \
               --cache-to=type=local,dest=client-python-<<parameters.python_version>>.tmp \
-              -o type=tar,dest=client-python-<<parameters.python_version>>
+              -o type=docker,dest=client-python-<<parameters.python_version>>:latest
 
       - run:
           name: Push image to registry
           command: |
             ls -alh
-            docker import "client-python-<<parameters.python_version>>" client-python-<<parameters.python_version>>:latest
-            docker load < "client-python-<<parameters.python_version>>"
             docker images
+            docker inspect client-python-<<parameters.python_version>>:latest
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push <<parameters.base_repo>>/client-python-<<parameters.python_version>> --all-tags
 
