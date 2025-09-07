@@ -96,9 +96,9 @@ jobs:
           command: >
             printf "[pypi]\nusername = __token__\npassword = %s\n"
             "${PYPI_PASSWORD}" >> ~/.pypirc
-      - run:
-          name: upload to pypi
-          command: twine upload dist/*
+#      - run:
+#          name: upload to pypi
+#          command: twine upload dist/*
       # - slack/notify:
       #     branch_pattern: master
       #     event: fail
