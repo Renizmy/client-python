@@ -1,7 +1,9 @@
 ---
 version: 2.1
 orbs:
-  slack: circleci/slack@4.15.0
+  #slack: circleci/slack@4.15.0
+  docker: circleci/docker@2.6.0
+
 jobs:
   ensure_formatting:
     docker:
@@ -24,10 +26,11 @@ jobs:
       - run:
           name: run black check
           command: black --check .
-      - slack/notify:
-          branch_pattern: master
-          event: fail
-          template: basic_fail_1
+      # - slack/notify:
+      #     branch_pattern: master
+      #     event: fail
+      #     template: basic_fail_1
+
   linter:
     docker:
       - image: alpine/flake8
@@ -37,10 +40,11 @@ jobs:
       - run:
           name: flake8
           command: flake8 --ignore=E,W ~/repo
-      - slack/notify:
-          branch_pattern: master
-          event: fail
-          template: basic_fail_1
+      # - slack/notify:
+      #     branch_pattern: master
+      #     event: fail
+      #     template: basic_fail_1
+
   build:
     working_directory: ~/opencti-client
     docker:
@@ -64,14 +68,15 @@ jobs:
           name: build
           command: >
             SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)" python3 -m build
-      - slack/notify:
-          branch_pattern: master
-          event: fail
-          template: basic_fail_1
+      # - slack/notify:
+      #     branch_pattern: master
+      #     event: fail
+      #     template: basic_fail_1
       - persist_to_workspace:
           root: ~/opencti-client
           paths:
             - dist
+
   deploy:
     working_directory: ~/opencti-client
     docker:
@@ -94,24 +99,61 @@ jobs:
       - run:
           name: upload to pypi
           command: twine upload dist/*
-      - slack/notify:
-          branch_pattern: master
-          event: fail
-          template: basic_fail_1
-  notify_rolling:
-    docker:
-      - image: "cimg/base:stable"
+      # - slack/notify:
+      #     branch_pattern: master
+      #     event: fail
+      #     template: basic_fail_1
+
+  # notify_rolling:
+  #   docker:
+  #     - image: "cimg/base:stable"
+  #   steps:
+  #     - slack/notify:
+  #         event: pass
+  #         template: basic_success_1
+
+  # notify:
+  #   docker:
+  #     - image: "cimg/base:stable"
+  #   steps:
+  #     - slack/notify:
+  #         event: pass
+  #         template: basic_success_1
+
+  build_alpine_multiarch:
+    executor: docker/docker
     steps:
-      - slack/notify:
-          event: pass
-          template: basic_success_1
-  notify:
-    docker:
-      - image: "cimg/base:stable"
-    steps:
-      - slack/notify:
-          event: pass
-          template: basic_success_1
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Setup Docker Buildx
+          command: |
+            docker buildx create --driver docker-container --name multiarch --use --bootstrap
+      - run:
+          name: Login to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run:
+          name: Login to GitHub Container Registry
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - run:
+          name: Build and Push Alpine Multi-arch Image
+          command: |
+            VERSION=${CIRCLE_TAG:-latest}
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --file Dockerfile.alpine \
+              --tag renizmy/client-python:${VERSION}-alpine \
+              --tag renizmy/client-python:alpine \
+              --tag ghcr.io/renizmy/client-python:${VERSION}-alpine \
+              --tag ghcr.io/renizmy/client-python:alpine \
+              --push \
+              .
+      # - slack/notify:
+      #     branch_pattern: master
+      #     event: fail
+      #     template: basic_fail_1
+
 
 workflows:
   version: 2
@@ -142,14 +184,27 @@ workflows:
               only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
             branches:
               ignore: /.*/
-      - notify_rolling:
-          requires:
-            - build
-      - notify:
-          requires:
-            - deploy
+      # - notify_rolling:
+      #     requires:
+      #       - build
+      # - notify:
+      #     requires:
+      #       - deploy
+      #     filters:
+      #       tags:
+      #         only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
+      #       branches:
+      #         ignore: /.*/
+
+  opencti_client_python_containers:
+    jobs:
+      - build_alpine_multiarch:
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
             branches:
-              ignore: /.*/
+              only:
+                - master
+          context:
+            - docker-hub
+            - github-packages
