@@ -129,7 +129,7 @@ jobs:
       - run:
           name: Setup Docker Buildx
           command: |
-            docker buildx create --driver docker-container --name multiarch --use --bootstrap
+            docker buildx create --driver docker-container --name multiarch --use
       - run:
           name: Login to Docker Hub
           command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
