@@ -145,8 +145,8 @@ jobs:
               --file Dockerfile.alpine \
               --tag renizmy/client-python:${VERSION}-alpine \
               --tag renizmy/client-python:alpine \
-              --tag ghcr.io/renizmy/client-python:${VERSION}-alpine \
-              --tag ghcr.io/renizmy/client-python:alpine \
+              --tag ghcr.io/Renizmy/client-python:${VERSION}-alpine \
+              --tag ghcr.io/Renizmy/client-python:alpine \
               --push \
               .
       # - slack/notify:
