@@ -1,0 +1,29 @@
+FROM python:3.13-alpine
+
+LABEL org.opencontainers.image.title="OpenCTI Python Client (Alpine)" \
+      org.opencontainers.image.description="OpenCTI Python Client built on Alpine Linux" \
+      org.opencontainers.image.source="https://github.com/OpenCTI-Platform/client-python" \
+      org.opencontainers.image.licenses="Apache-2.0"
+
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    openssl-dev \
+    libmagic \
+    && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+RUN pip install --no-cache-dir .
+
+RUN addgroup -g 1000 opencti && \
+    adduser -D -u 1000 -G opencti opencti
+
+USER opencti
+
+CMD ["python", "-c", "import pycti; print(f'OpenCTI Python Client v{pycti.__version__} ready')"]

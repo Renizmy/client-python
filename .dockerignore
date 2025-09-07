@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# CI/CD
+.circleci
+.github
+
+# Documentation
+docs/
+*.md
+*.rst
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Tests
+tests/
+test-requirements.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Other
+examples/
+scripts/
+renovate.json
