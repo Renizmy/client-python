@@ -122,6 +122,9 @@ jobs:
 
   build_alpine_multiarch:
     executor: docker/docker
+    parameters:
+      python_version:
+        type: string
     steps:
       - checkout
       - setup_remote_docker:
@@ -143,10 +146,10 @@ jobs:
             docker buildx build \
               --platform linux/amd64,linux/arm64 \
               --file Dockerfile.alpine \
-              --tag renizmy/client-python:${VERSION}-alpine \
-              --tag renizmy/client-python:alpine \
-              --tag ghcr.io/renizmy/client-python:${VERSION}-alpine \
-              --tag ghcr.io/renizmy/client-python:alpine \
+              --tag renizmy/client-python-<< parameters.python_version | replace(".", "-") >>:${CIRCLE_TAG} \
+              --tag renizmy/client-python-<< parameters.python_version | replace(".", "-") >>:latest \
+              --tag ghcr.io/renizmy//client-python-<< parameters.python_version | replace(".", "-") >>:${CIRCLE_TAG} \
+              --tag ghcr.io/renizmy//client-python-<< parameters.python_version | replace(".", "-") >>:latest \
               --push \
               .
       # - slack/notify:
@@ -199,6 +202,9 @@ workflows:
   opencti_client_python_containers:
     jobs:
       - build_alpine_multiarch:
+          matrix:
+            parameters:
+              python_version: [ "3.11", "3.12" ]
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)+(\.[0-9]+)?\.?(\w)*/
