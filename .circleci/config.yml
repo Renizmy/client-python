@@ -143,13 +143,14 @@ jobs:
           name: Build and Push Alpine Multi-arch Image
           command: |
             VERSION=${CIRCLE_TAG:-latest}
+            PYTHON_VERSION_TAG=$(echo "<< parameters.python_version >>" | sed 's/\./-/g')
             docker buildx build \
               --platform linux/amd64,linux/arm64 \
               --file Dockerfile.alpine \
-              --tag renizmy/client-python-<< parameters.python_version | replace(".", "-") >>:${CIRCLE_TAG} \
-              --tag renizmy/client-python-<< parameters.python_version | replace(".", "-") >>:latest \
-              --tag ghcr.io/renizmy//client-python-<< parameters.python_version | replace(".", "-") >>:${CIRCLE_TAG} \
-              --tag ghcr.io/renizmy//client-python-<< parameters.python_version | replace(".", "-") >>:latest \
+              --tag renizmy/client-python-${PYTHON_VERSION_TAG}:${VERSION} \
+              --tag renizmy/client-python-${PYTHON_VERSION_TAG}:latest \
+              --tag ghcr.io/renizmy/client-python-${PYTHON_VERSION_TAG}:${VERSION} \
+              --tag ghcr.io/renizmy/client-python-${PYTHON_VERSION_TAG}:latest \
               --push \
               .
       # - slack/notify:
